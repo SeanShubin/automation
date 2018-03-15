@@ -38,6 +38,7 @@
         </dependencies>
     </dependencyManagement>
     <modules>
+        <module>domain</module>
         <module>prototype</module>
         <module>ssh</module>
         <module>io</module>

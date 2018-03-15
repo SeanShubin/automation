@@ -27,7 +27,8 @@
   }
   global [scala-library scala-test]
   modules {
-    prototype     [ssh]
+    domain        [ssh string]
+    prototype     [domain]
     ssh           [jcabi-ssh io string contract]
     io            []
     string        []
