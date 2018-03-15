@@ -1,0 +1,40 @@
+{
+  prefix [com seanshubin]
+  name [automation]
+  description 'automation'
+  version 0.1-SNAPSHOT
+  developer {
+    name 'Sean Shubin'
+    githubName SeanShubin
+    mavenUserName SeanShubin
+    organization 'Sean Shubin'
+    url http://seanshubin.com/
+  }
+  dependencies {
+    scala-library {
+      group org.scala-lang
+      artifact scala-library
+    }
+    scala-test {
+      group org.scalatest
+      artifact scalatest_2.12
+      scope test
+    }
+    jcabi-ssh {
+      group    com.jcabi
+      artifact jcabi-ssh
+    }
+  }
+  global [scala-library scala-test]
+  modules {
+    prototype     [ssh]
+    ssh           [jcabi-ssh io string contract]
+    io            []
+    string        []
+    contract      []
+    contract-test [contract]
+  }
+  consoleEntryPoint {
+    console com.seanshubin.automation.prototype.EntryPoint
+  }
+}
