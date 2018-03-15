@@ -1,6 +1,6 @@
 package com.seanshubin.automation.ssh
 
-import java.io.{ByteArrayInputStream, ByteArrayOutputStream}
+import java.io.{ByteArrayInputStream, ByteArrayOutputStream, OutputStream}
 import java.nio.charset.Charset
 
 import com.jcabi.ssh.{Shell, Ssh}
@@ -11,11 +11,15 @@ class SshWrapper(host: String, userName: String, privateKey: String, charset: Ch
   private val safeShell = new Shell.Safe(unsafeShell)
 
   def execString(command: String): String = {
-    val inputStream = new ByteArrayInputStream(Array[Byte]())
     val outputStream = new ByteArrayOutputStream()
-    val errorStream = new ByteArrayOutputStream()
-    val exitCode = safeShell.exec(command, inputStream, outputStream, errorStream)
+    execOutputStream(command, outputStream)
     val text = IoUtil.bytesToString(outputStream.toByteArray, charset)
     text
+  }
+
+  def execOutputStream(command: String, outputStream: OutputStream): Unit = {
+    val inputStream = new ByteArrayInputStream(Array[Byte]())
+    val errorStream = new ByteArrayOutputStream()
+    safeShell.exec(command, inputStream, outputStream, errorStream)
   }
 }
