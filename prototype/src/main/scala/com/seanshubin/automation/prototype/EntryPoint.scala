@@ -4,7 +4,7 @@ import java.nio.charset.{Charset, StandardCharsets}
 import java.time.Clock
 
 import com.seanshubin.automation.contract.{FilesContract, FilesDelegate}
-import com.seanshubin.automation.domain.{Downloader, Parser, ParserImpl}
+import com.seanshubin.automation.domain._
 import com.seanshubin.automation.ssh.{SshFactory, SshFactoryImpl}
 
 object EntryPoint extends App {
@@ -16,7 +16,8 @@ object EntryPoint extends App {
   val emit: String => Unit = println
   val parser: Parser = new ParserImpl
   val clock: Clock = Clock.systemUTC()
+  val executor: Executor = new ExecutorImpl(charset)
   val downloader: Runnable = new Downloader(
-    host, privateKeyPathName, files, charset, sshFactory, emit, parser, clock)
+    host, privateKeyPathName, files, charset, sshFactory, emit, parser, clock, executor)
   downloader.run()
 }

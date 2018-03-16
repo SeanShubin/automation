@@ -16,7 +16,8 @@ class Downloader(host: String,
                  sshFactory: SshFactory,
                  emit: String => Unit,
                  parser: Parser,
-                 clock: Clock) extends Runnable {
+                 clock: Clock,
+                 executor: Executor) extends Runnable {
   override def run(): Unit = {
     val privateKeyPath = Paths.get(privateKeyPathName)
     val privateKeyBytes = files.readAllBytes(privateKeyPath)
@@ -24,12 +25,14 @@ class Downloader(host: String,
     val ssh = sshFactory.connect(host, privateKey)
     val text = ssh.execString("cat .digitalocean_password")
     val mySqlPassword = parser.parseKeyEqualsValue(text)("root_mysql_pass")
-    val mySqlDumpDir = Paths.get("target", PathUtil.makeFileNameSafeForOperatingSystem(clock.instant().toString))
-    files.createDirectories(mySqlDumpDir)
-    val mySqlDumpPath = mySqlDumpDir.resolve("my-sql.txt")
+    val outputDirectory = Paths.get("target", PathUtil.makeFileNameSafeForOperatingSystem(clock.instant().toString))
+    files.createDirectories(outputDirectory)
+    val mySqlDumpPath = outputDirectory.resolve("my-sql.sql")
     withOutputStream(mySqlDumpPath) { outputStream =>
       ssh.execOutputStream(s"mysqldump -u root -p$mySqlPassword wordpress", outputStream)
     }
+    val themeDirectory = outputDirectory.resolve("themes")
+    executor.exec("scp", "-r", s"root@$host:/var/www/html/wp-content/themes/", themeDirectory.toString)
   }
 
   private def withOutputStream[T](path: Path)(f: OutputStream => T): T = {
@@ -42,6 +45,7 @@ class Downloader(host: String,
   }
 }
 
+// /var/www/html/wp-content/themes
 //backup: # mysqldump -u root -p[root_password] [database_name] > dumpfilename.sql
 
 //restore:# mysql -u root -p[root_password] [database_name] < dumpfilename.sql
