@@ -25,7 +25,7 @@ class Downloader(host: String,
     val ssh = sshFactory.connect(host, privateKey)
     val text = ssh.execString("cat .digitalocean_password")
     val mySqlPassword = parser.parseKeyEqualsValue(text)("root_mysql_pass")
-    val outputDirectory = Paths.get("target", PathUtil.makeFileNameSafeForOperatingSystem(clock.instant().toString))
+    val outputDirectory = Paths.get("target", host, PathUtil.makeFileNameSafeForOperatingSystem(clock.instant().toString))
     files.createDirectories(outputDirectory)
     val mySqlDumpPath = outputDirectory.resolve("my-sql.sql")
     withOutputStream(mySqlDumpPath) { outputStream =>

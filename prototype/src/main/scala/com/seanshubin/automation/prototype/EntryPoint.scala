@@ -8,8 +8,9 @@ import com.seanshubin.automation.domain._
 import com.seanshubin.automation.ssh.{SshFactory, SshFactoryImpl}
 
 object EntryPoint extends App {
-  val host: String = args(0)
-  val privateKeyPathName: String = args(1)
+  val command: String = args(0)
+  val host: String = args(1)
+  val privateKeyPathName: String = args(2)
   val files: FilesContract = FilesDelegate
   val charset: Charset = StandardCharsets.UTF_8
   val sshFactory: SshFactory = new SshFactoryImpl(charset)
@@ -18,6 +19,15 @@ object EntryPoint extends App {
   val clock: Clock = Clock.systemUTC()
   val executor: Executor = new ExecutorImpl(charset)
   val downloader: Runnable = new Downloader(
-    host, privateKeyPathName, files, charset, sshFactory, emit, parser, clock, executor)
-  downloader.run()
+    host,
+    privateKeyPathName,
+    files,
+    charset,
+    sshFactory,
+    emit,
+    parser,
+    clock,
+    executor)
+  val dispatcher: Runnable = new Dispatcher(command, downloader)
+  dispatcher.run()
 }
