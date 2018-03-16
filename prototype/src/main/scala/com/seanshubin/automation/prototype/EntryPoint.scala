@@ -28,6 +28,17 @@ object EntryPoint extends App {
     parser,
     clock,
     executor)
-  val dispatcher: Runnable = new Dispatcher(command, downloader)
+  val uploader: Runnable = new Uploader(
+    host,
+    privateKeyPathName,
+    files,
+    charset,
+    sshFactory,
+    emit,
+    parser,
+    clock,
+    executor)
+  val dispatcher: Runnable = new Dispatcher(
+    command, downloader, uploader)
   dispatcher.run()
 }

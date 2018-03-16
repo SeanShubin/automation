@@ -25,9 +25,12 @@ class Downloader(host: String,
     val ssh = sshFactory.connect(host, privateKey)
     val text = ssh.execString("cat .digitalocean_password")
     val mySqlPassword = parser.parseKeyEqualsValue(text)("root_mysql_pass")
-    val outputDirectory = Paths.get("target", host, PathUtil.makeFileNameSafeForOperatingSystem(clock.instant().toString))
+    val outputDirectory = Paths.get(
+      "target",
+      host,
+      PathUtil.makeFileNameSafeForOperatingSystem(clock.instant().toString))
     files.createDirectories(outputDirectory)
-    val mySqlDumpPath = outputDirectory.resolve("my-sql.sql")
+    val mySqlDumpPath = outputDirectory.resolve("wordpress.sql")
     withOutputStream(mySqlDumpPath) { outputStream =>
       ssh.execOutputStream(s"mysqldump -u root -p$mySqlPassword wordpress", outputStream)
     }
@@ -45,7 +48,6 @@ class Downloader(host: String,
   }
 }
 
-// /var/www/html/wp-content/themes
 //backup: # mysqldump -u root -p[root_password] [database_name] > dumpfilename.sql
 
 //restore:# mysql -u root -p[root_password] [database_name] < dumpfilename.sql

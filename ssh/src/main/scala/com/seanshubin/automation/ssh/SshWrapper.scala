@@ -1,25 +1,11 @@
 package com.seanshubin.automation.ssh
 
-import java.io.{ByteArrayInputStream, ByteArrayOutputStream, OutputStream}
-import java.nio.charset.Charset
+import java.io.{InputStream, OutputStream}
 
-import com.jcabi.ssh.{Shell, Ssh}
-import com.seanshubin.automation.io.IoUtil
+trait SshWrapper {
+  def execString(command: String): String
 
-class SshWrapper(host: String, userName: String, privateKey: String, charset: Charset) {
-  private val unsafeShell = new Ssh(host, 22, userName, privateKey)
-  private val safeShell = new Shell.Safe(unsafeShell)
+  def execOutputStream(command: String, outputStream: OutputStream): Unit
 
-  def execString(command: String): String = {
-    val outputStream = new ByteArrayOutputStream()
-    execOutputStream(command, outputStream)
-    val text = IoUtil.bytesToString(outputStream.toByteArray, charset)
-    text
-  }
-
-  def execOutputStream(command: String, outputStream: OutputStream): Unit = {
-    val inputStream = new ByteArrayInputStream(Array[Byte]())
-    val errorStream = new ByteArrayOutputStream()
-    safeShell.exec(command, inputStream, outputStream, errorStream)
-  }
+  def execInputStream(command: String, inputStream: InputStream): Unit
 }
