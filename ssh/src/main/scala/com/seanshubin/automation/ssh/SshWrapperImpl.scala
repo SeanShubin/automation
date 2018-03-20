@@ -14,6 +14,7 @@ class SshWrapperImpl(host: String,
   private val safeShell = new Shell.Safe(unsafeShell)
 
   override def execString(command: String): String = {
+    println(command)
     val outputStream = new ByteArrayOutputStream()
     execOutputStream(command, outputStream)
     val text = IoUtil.bytesToString(outputStream.toByteArray, charset)

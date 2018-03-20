@@ -43,8 +43,19 @@ class Uploader(host: String,
     val mySqlPassword = parser.parseKeyEqualsValue(text)("root_mysql_pass")
     withInputStream(mySqlDumpPath) {
       inputStream =>
-        ssh.execInputStream(s"mysql -u root -p$mySqlPassword wordpress", inputStream)
+        ssh.execInputStream(
+          s"mysql -u root -p$mySqlPassword wordpress", inputStream)
     }
+    val updateSql = s"update wp_options set option_value = 'http://$host' where option_name in ('siteurl', 'home')"
+    val quotedUpdateSql = "\"" + updateSql + "\""
+    ssh.execString(
+      s"mysql -u root -p$mySqlPassword -e $quotedUpdateSql wordpress")
+    executor.exec(
+      "scp",
+      "-r",
+      s"/Applications/MAMP/htdocs/wordpress/wp-content/themes",
+      s"root@$host:/var/www/html/wp-content/"
+    )
   }
 
   private def withInputStream[T](path: Path)(f: InputStream => T): T = {
@@ -55,10 +66,5 @@ class Uploader(host: String,
       inputStream.close()
     }
   }
+
 }
-
-
-// /var/www/html/wp-content/themes
-//backup: # mysqldump -u root -p[root_password] [database_name] > dumpfilename.sql
-
-//restore:# mysql -u root -p[root_password] [database_name] < dumpfilename.sql
