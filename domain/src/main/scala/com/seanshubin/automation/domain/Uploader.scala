@@ -56,6 +56,12 @@ class Uploader(host: String,
       s"/Applications/MAMP/htdocs/wordpress/wp-content/themes",
       s"root@$host:/var/www/html/wp-content/"
     )
+    executor.exec(
+      "scp",
+      "-r",
+      s"/Applications/MAMP/htdocs/wordpress/wp-content/uploads",
+      s"root@$host:/var/www/html/wp-content/"
+    )
   }
 
   private def withInputStream[T](path: Path)(f: InputStream => T): T = {
