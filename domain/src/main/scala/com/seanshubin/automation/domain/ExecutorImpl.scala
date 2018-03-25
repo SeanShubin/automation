@@ -7,6 +7,7 @@ import com.seanshubin.automation.io.IoUtil
 
 class ExecutorImpl(charset: Charset) extends Executor {
   def exec(command: String*): Unit = {
+    println(command.mkString(" "))
     val processBuilder: ProcessBuilder =
       new ProcessBuilder().command(command: _*)
     val process = processBuilder.start()
