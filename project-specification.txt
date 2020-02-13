@@ -36,6 +36,6 @@
     contract-test [contract]
   }
   consoleEntryPoint {
-    console com.seanshubin.automation.prototype.EntryPoint
+    prototype com.seanshubin.automation.prototype.EntryPoint
   }
 }

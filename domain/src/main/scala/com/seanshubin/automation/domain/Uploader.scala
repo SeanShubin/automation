@@ -9,7 +9,8 @@ import com.seanshubin.automation.contract.FilesContract
 import com.seanshubin.automation.io.IoUtil
 import com.seanshubin.automation.ssh.SshFactory
 
-class Uploader(host: String,
+class Uploader(logPath:Path,
+               host: String,
                privateKeyPathName: String,
                files: FilesContract,
                charset: Charset,
@@ -19,9 +20,8 @@ class Uploader(host: String,
                clock: Clock,
                executor: Executor) extends Runnable {
   override def run(): Unit = {
-    val dir = Paths.get(
-      "target",
-      "local",
+    val dir = logPath.resolve(
+      "local").resolve(
       PathUtil.makeFileNameSafeForOperatingSystem(
         clock.instant().toString))
     files.createDirectories(dir)

@@ -1,6 +1,7 @@
 package com.seanshubin.automation.prototype
 
 import java.nio.charset.{Charset, StandardCharsets}
+import java.nio.file.{Path, Paths}
 import java.time.Clock
 
 import com.seanshubin.automation.contract.{FilesContract, FilesDelegate}
@@ -11,6 +12,7 @@ object EntryPoint extends App {
   val command: String = args(0)
   val host: String = args(1)
   val privateKeyPathName: String = args(2)
+  val logPath:Path = Paths.get("logs")
   val files: FilesContract = FilesDelegate
   val charset: Charset = StandardCharsets.UTF_8
   val sshFactory: SshFactory = new SshFactoryImpl(charset)
@@ -19,6 +21,7 @@ object EntryPoint extends App {
   val clock: Clock = Clock.systemUTC()
   val executor: Executor = new ExecutorImpl(charset)
   val downloader: Runnable = new Downloader(
+    logPath,
     host,
     privateKeyPathName,
     files,
@@ -29,6 +32,7 @@ object EntryPoint extends App {
     clock,
     executor)
   val uploader: Runnable = new Uploader(
+    logPath,
     host,
     privateKeyPathName,
     files,

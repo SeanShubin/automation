@@ -9,7 +9,8 @@ import com.seanshubin.automation.contract.FilesContract
 import com.seanshubin.automation.io.IoUtil
 import com.seanshubin.automation.ssh.SshFactory
 
-class Downloader(host: String,
+class Downloader(logPath:Path,
+                 host: String,
                  privateKeyPathName: String,
                  files: FilesContract,
                  charset: Charset,
@@ -25,9 +26,8 @@ class Downloader(host: String,
     val ssh = sshFactory.connect(host, privateKey)
     val text = ssh.execString("cat .digitalocean_password")
     val mySqlPassword = parser.parseKeyEqualsValue(text)("root_mysql_pass")
-    val outputDirectory = Paths.get(
-      "target",
-      host,
+    val outputDirectory = logPath.resolve(
+      host).resolve(
       PathUtil.makeFileNameSafeForOperatingSystem(clock.instant().toString))
     files.createDirectories(outputDirectory)
     val mySqlDumpPath = outputDirectory.resolve("wordpress.sql")
